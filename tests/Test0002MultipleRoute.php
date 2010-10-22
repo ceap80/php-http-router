@@ -8,7 +8,7 @@ set_include_path(implode(':', array(
 require_once 'PHPUnit/Framework.php';
 require_once 'HTTP/Router.class.php';
 
-class Test0001MultipleRoute extends PHPUnit_Framework_TestCase {
+class Test0002MultipleRoute extends PHPUnit_Framework_TestCase {
 
 	public function setup()
 	{
