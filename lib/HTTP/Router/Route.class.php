@@ -65,7 +65,7 @@ class Route {
 
 		if (isset($options['host'])) {
 			$data['host'] = $options['host'];
-			$data['host_re'] = sprintf('@\Q%s\E@', $data['host']);
+			$data['host_re'] = sprintf('@^%s$@', preg_quote($data['host'], '@'));
 		}
 
 		$data['pattern'] = $pattern;
@@ -99,7 +99,7 @@ class Route {
 			$pattern
 		);
 
-		$data['pattern_re'] = sprintf('@%s@', $pattern_re);
+		$data['pattern_re'] = sprintf('@^%s$@', $pattern_re);
 
 		$this->data = $data;
 		$this->captures = $captures;
@@ -116,13 +116,13 @@ class Route {
 	function match($env)
 	{
 		if (!empty($this->data['host_re'])) {
-			if (!preg_match($this->data['host_re'], $env['HTTP_HOST'])) {
+			if (!isset($env['HTTP_HOST']) || !preg_match($this->data['host_re'], $env['HTTP_HOST'])) {
 				return false;
 			}
 		}
 
 		if (!empty($this->data['method_re'])) {
-			if (!preg_match($this->data['method_re'], $env['REQUEST_METHOD'])) {
+			if (!isset($env['REQUEST_METHOD']) || !preg_match($this->data['method_re'], $env['REQUEST_METHOD'])) {
 				return false;
 			}
 		}
