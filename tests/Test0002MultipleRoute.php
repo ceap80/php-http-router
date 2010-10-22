@@ -42,7 +42,7 @@ class Test0002MultipleRoute extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($match03['month'], '03');
 		$this->assertEquals($match03['day'], '04');
 
-		$match04 = $router->match(array('REQUEST_METHOD' => 'GET', 'PATH_INFO' => '/comment', 'HTTP_HOST' => 'localhost',)); 
+		$match04 = $router->match(array('REQUEST_METHOD' => 'POST', 'PATH_INFO' => '/comment', 'HTTP_HOST' => 'localhost',)); 
 		$this->assertEquals($match04['controller'], 'comment');
 		$this->assertEquals($match04['action'], 'create');
 

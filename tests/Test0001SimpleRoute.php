@@ -84,7 +84,7 @@ class Test0001SimpleRoute extends PHPUnit_Framework_TestCase {
 		);
 
 		$match = $this->router->match(array(
-			'REQUEST_METHOD' => 'GET',
+			'REQUEST_METHOD' => 'POST',
 			'PATH_INFO' => '/comment',
 			'HTTP_HOST' => 'localhost',
 		));

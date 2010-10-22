@@ -57,7 +57,7 @@ class Route {
 			$data['on_match'] = $options['on_match'];
 		}
 
-		if (isset($optoons['method'])) {
+		if (isset($options['method'])) {
 			$method = $options['method'];
 			$data['method'] = is_array($method) ? $method : array($method);
 			$data['method_re'] = sprintf('@^(?:%s)$@', implode('|', array_values($data['method'])));
@@ -169,5 +169,44 @@ class Route {
 		return false;
 	}
 
+	/*
+	 *
+	 */
+	public function getName()
+	{
+		if (!empty($this->name)) {
+			return $this->name;
+		}
+
+		return null;
+	}
+
+	/*
+	 *
+	 */
+	public function getPattern()
+	{
+		if (!empty($this->pattern)) {
+			return $this->pattern;
+		}
+
+		return null;
+	}
+
+	/*
+	 *
+	 */
+	public function getData($key = null)
+	{
+		if (empty($key)) {
+			return array_keys($this->data);
+		}
+
+		if (!empty($this->data[$key])) {
+			return $this->data[$key];
+		}
+
+		return null;
+	}
 }
 
