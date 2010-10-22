@@ -71,6 +71,7 @@ class Route {
 		$data['pattern'] = $pattern;
 		
 		$captures = array();
+
 		$pattern_re = preg_replace_callback(
 			'@
 			\{((?:\{[0-9,]+\}|[^{}]+)+)\} | 
@@ -81,16 +82,21 @@ class Route {
 			function ($matches) use (&$captures) {
 				if (!empty($matches[1])) {
 					$pair = explode(':', $matches[1]);
+
 					array_push($captures, $pair[0]);
+
 					if (!empty($pair[1])) {
 						return sprintf('(%s)', $pair[1]);
 					}
+
 					return '([^/]+)';
 				} elseif (!empty($matches[2])) {
 					array_push($captures, $matches[2]);
+
 					return '([^/]+)';
 				} elseif (!empty($matches[3])) {
 					array_push($captures, '__SPLAT__');
+
 					return '(.+)';
 				}
 
@@ -134,8 +140,9 @@ class Route {
 			$splat = array();
 
 			array_shift($captured);
+
 			for ($index = 0; $index < count($this->captures); $index++) {
-				if ($this->captures[$index] == '__SPLAT__' ) {
+				if ($this->captures[$index] == '__SPLAT__') {
 					$splat[] = $captured[$index];
 				} else {
 					$args[$this->captures[$index]] = $captured[$index];
@@ -143,12 +150,14 @@ class Route {
 			}
 
 			$match = array_merge((array)$this->destination, $args);
+
 			if (!empty($splat)) {
 				$match['splat'] = $splat;
 			}
 
 			if (isset($this->data['on_match']) && is_callable($this->data['on_match'])) {
 				$result = $this->data['on_match']($env, $match);
+
 				if (empty($result)) {
 					return false;
 				}

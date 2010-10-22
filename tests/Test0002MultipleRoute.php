@@ -49,7 +49,6 @@ class Test0001MultipleRoute extends PHPUnit_Framework_TestCase {
 		$match05 = $router->match(array('PATH_INFO' => '/', 'HTTP_HOST' => 'sub.localhost',)); 
 		$this->assertEquals($match05['controller'], 'root');
 		$this->assertEquals($match05['action'], 'show_sub');
-
 	}
 
 	public function tearDown()
