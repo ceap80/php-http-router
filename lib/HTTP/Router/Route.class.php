@@ -72,40 +72,47 @@ class Route {
 		
 		$captures = array();
 
-		$pattern_re = preg_replace_callback(
-			'@
-			\{((?:\{[0-9,]+\}|[^{}]+)+)\} | 
-			:([A-Za-z0-9_]+)              |
-			(\*)                          |
-			([^{:*]+)
-			@mx',
-			function ($matches) use (&$captures) {
-				if (!empty($matches[1])) {
-					$pair = explode(':', $matches[1]);
+		if ($this->regexpUses($pattern)) {
+			$data['regexp_uses'] = true;
+			$data['pattern_re'] = $pattern;
+		} else {
+			$data['regexp_uses'] = false;
+			$pattern_re = preg_replace_callback(
+				'@
+				\{((?:\{[0-9,]+\}|[^{}]+)+)\} | 
+				:([A-Za-z0-9_]+)              |
+				(\*)                          |
+				([^{:*]+)
+				@mx',
+				function ($matches) use (&$captures) {
+					if (!empty($matches[1])) {
+						$pair = explode(':', $matches[1]);
 
-					array_push($captures, $pair[0]);
+						array_push($captures, $pair[0]);
 
-					if (!empty($pair[1])) {
-						return sprintf('(%s)', $pair[1]);
+						if (!empty($pair[1])) {
+							return sprintf('(%s)', $pair[1]);
+						}
+
+						return '([^/]+)';
+					} elseif (!empty($matches[2])) {
+						array_push($captures, $matches[2]);
+
+						return '([^/]+)';
+					} elseif (!empty($matches[3])) {
+						array_push($captures, '__SPLAT__');
+
+						return '(.+)';
 					}
 
-					return '([^/]+)';
-				} elseif (!empty($matches[2])) {
-					array_push($captures, $matches[2]);
+					return preg_quote($matches[4], '@');
+				},
+				$pattern
+			);
 
-					return '([^/]+)';
-				} elseif (!empty($matches[3])) {
-					array_push($captures, '__SPLAT__');
+			$data['pattern_re'] = sprintf('@^%s$@', $pattern_re);
+		}
 
-					return '(.+)';
-				}
-
-				return preg_quote($matches[4], '@');
-			},
-			$pattern
-		);
-
-		$data['pattern_re'] = sprintf('@^%s$@', $pattern_re);
 
 		$this->data = $data;
 		$this->captures = $captures;
@@ -141,11 +148,15 @@ class Route {
 
 			array_shift($captured);
 
-			for ($index = 0; $index < count($this->captures); $index++) {
-				if ($this->captures[$index] == '__SPLAT__') {
-					$splat[] = $captured[$index];
-				} else {
-					$args[$this->captures[$index]] = $captured[$index];
+			if ($this->data['regexp_uses']) {
+				$splat = $captured;
+			} else {
+				for ($index = 0; $index < count($this->captures); $index++) {
+					if ($this->captures[$index] == '__SPLAT__') {
+						$splat[] = $captured[$index];
+					} else {
+						$args[$this->captures[$index]] = $captured[$index];
+					}
 				}
 			}
 
@@ -166,6 +177,21 @@ class Route {
 			return $match;
 		}
 
+		return false;
+	}
+
+	/*
+	 *
+	 */
+	public function regexpUses($pattern)
+	{
+		// See: http://php.net/manual/reference.pcre.pattern.modifiers.php
+		// See: http://php.net/manual/regexp.reference.delimiters.php
+		if (preg_match('@^([^\s\\\\a-z0-9])(?:.*?)\1(?:[imsxeADSUXJu]*)?$@mD', $pattern)) return true;
+		if (preg_match('@^\{(?:.*?)\}(?:[imsxeADSUXJu]*)?$@mD', $pattern)) return true;
+		if (preg_match('@^\[(?:.*?)\](?:[imsxeADSUXJu]*)?$@mD', $pattern)) return true;
+		if (preg_match('@^\<(?:.*?)\>(?:[imsxeADSUXJu]*)?$@mD', $pattern)) return true;
+		if (preg_match('@^\((?:.*?)\)(?:[imsxeADSUXJu]*)?$@mD', $pattern)) return true;
 		return false;
 	}
 
