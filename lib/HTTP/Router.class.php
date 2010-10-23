@@ -2,6 +2,7 @@
 namespace HTTP;
 
 require_once 'HTTP/Router/Route.class.php';
+require_once 'HTTP/Router/SubMapper.class.php';
 
 class Router {
 
@@ -41,8 +42,8 @@ class Router {
 	 */
 	public function getSubMapper($pattern, $destination = array(), $options = array())
 	{
-		$this->routes[] =& new \HTTP\Router\Route($name, $pattern, $destination, $options);
-		return $this;
+		$submapper =& new \HTTP\Router\SubMapper($this, $pattern, $destination, $options);
+		return $submapper;
 	}
 
 
