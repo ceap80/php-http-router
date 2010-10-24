@@ -46,11 +46,21 @@ class Router {
 		return $submapper;
 	}
 
-
+	/*
+	 *
+	 */
 	public function match($request)
 	{
 		list($match) = $this->process($request);
 		return $match;
+	}
+
+	/*
+	 *
+	 */
+	public function routematch($request)
+	{
+		return $this->process($request);
 	}
 
 	/*
@@ -72,7 +82,7 @@ class Router {
 			}
 		}
 
-		return false;
+		return array(false, false);
 	}
 
 	public function __toString()
