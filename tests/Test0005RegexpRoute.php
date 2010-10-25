@@ -30,15 +30,15 @@ class Test0005RegexpRoute extends PHPUnit_Framework_TestCase {
 		$match02 = $router->match(array('REQUEST_METHOD' => 'GET', 'PATH_INFO' => '/blog/2010/03', 'HTTP_HOST' => 'localhost',)); 
 		$this->assertEquals($match02['controller'], 'blog');
 		$this->assertEquals($match02['action'], 'monthly');
-		$this->assertEquals($match02['splat']['year'], 2010);
-		$this->assertEquals($match02['splat']['month'], '03');
+		$this->assertEquals($match02['year'], $match02['splat'][0]);
+		$this->assertEquals($match02['month'], $match02['splat'][1]);
 
 		$match03 = $router->match(array('REQUEST_METHOD' => 'GET', 'PATH_INFO' => '/blog/2010/03/04',)); 
 		$this->assertEquals($match03['controller'], 'blog');
 		$this->assertEquals($match03['action'], 'daily');
-		$this->assertEquals($match03['splat']['year'], 2010);
-		$this->assertEquals($match03['splat']['month'], '03');
-		$this->assertEquals($match03['splat']['day'], '04');
+		$this->assertEquals($match03['year'], $match03['splat'][0]);
+		$this->assertEquals($match03['month'], $match03['splat'][1]);
+		$this->assertEquals($match03['day'], $match03['splat'][2]);
 	}
 
 	public function tearDown()

@@ -150,6 +150,13 @@ class Route {
 
 			if ($this->data['regexp_uses']) {
 				$splat = $captured;
+
+				foreach ($splat as $key => $value) {
+					if (!is_integer($key)) {
+						$args[$key] = $value;
+						unset($splat[$key]);
+					}
+				}
 			} else {
 				for ($index = 0; $index < count($this->captures); $index++) {
 					if ($this->captures[$index] == '__SPLAT__') {
